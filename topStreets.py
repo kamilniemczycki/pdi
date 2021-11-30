@@ -11,15 +11,16 @@ class Voivodeship(object):
 		self.id = id
 		self.name = name
 
-with open("data/Voivodeships.csv", encoding="utf-8") as fp:
-	lines = fp.readlines()
-	for line in lines:
-		Voivodeship.id = line.split(";")[0]
-		Voivodeship.name = line.split(";")[1]
-		voivodeships.append(Voivodeship(Voivodeship.id, Voivodeship.name.replace("\n","")))
+def topStreets():
+	with open("data/Voivodeships.csv", encoding="utf-8") as fp:
+		lines = fp.readlines()
+		for line in lines:
+			Voivodeship.id = line.split(";")[0]
+			Voivodeship.name = line.split(";")[1]
+			voivodeships.append(Voivodeship(Voivodeship.id, Voivodeship.name.replace("\n","")))
 
-for voivodeship in voivodeships:
-	print(voivodeship.id + " " + voivodeship.name)
+	for voivodeship in voivodeships:
+		print(voivodeship.id + " " + voivodeship.name)
 	
 	
 	
