@@ -1,4 +1,4 @@
-from src.places import City, Street
+from src.places import City, Street, Voivodeship
 
 
 class Cities(object):
@@ -60,3 +60,21 @@ class Streets(object):
                 street = Street(line)
                 street.set_city(self.cities.find_by_id(street.city_id))
                 yield street
+
+
+class Voivodeships:
+    def __init__(self, file):
+        self.file = file
+        self.voivodeships = []
+
+    def all(self):
+        if not self.voivodeships:
+            self.load_with_file()
+        return self.voivodeships
+
+    def load_with_file(self):
+        with open(self.file, encoding="utf-8") as fp:
+            lines = fp.readlines()
+            for line in lines:
+                line = line[:-1].split(";")
+                self.voivodeships.append(Voivodeship(line[0], line[1]))
