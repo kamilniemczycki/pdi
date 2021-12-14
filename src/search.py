@@ -1,4 +1,4 @@
-from src.cli import get_searched_phrase, get_mapbox
+from src.cli import get_mapbox
 from src.repositories import Cities, Streets
 from sys import argv
 
