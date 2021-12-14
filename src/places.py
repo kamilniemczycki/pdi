@@ -8,6 +8,7 @@ class City(object):
 
 class Street(object):
     def __init__(self, properties):
+        self.voivodeship_id = properties.split(";")[0]        
         self.prefix = properties.split(";")[6]
         self.additional_name = properties.split(";")[8]
         self.proper_name = properties.split(";")[7]
