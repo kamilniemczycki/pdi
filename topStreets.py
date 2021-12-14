@@ -1,33 +1,39 @@
-from src.repositories import Cities, Streets
-from collections import Counter
+from src.repositories import Cities, Streets, Voivodeships
 
 cities = Cities("data/SIMC_Urzedowy_2021-10-09.csv")
 streets = Streets("data/ULIC_Adresowy_2021-10-09.csv", cities)
+voivodeships = Voivodeships("data/Voivodeships.csv")
 
-voivodeships = []
-streetNames = []
 
-class Voivodeship(object):
+def top_streets():
+    print_top_street_per_voivodeship(count_streets())
 
-	def __init__(self, id, name):
-		self.id = id
-		self.name = name
 
-def topStreets():
-	with open("data/Voivodeships.csv", encoding="utf-8") as fp:
-		lines = fp.readlines()
-		for line in lines:
-			Voivodeship.id = line.split(";")[0]
-			Voivodeship.name = line.split(";")[1]
-			voivodeships.append(Voivodeship(Voivodeship.id, Voivodeship.name.replace("\n","")))
+def count_streets():
+    street_arr = {}
+    for street in streets.all():
+        if street.voivodeship_id not in street_arr.keys():
+            street_arr[street.voivodeship_id] = {}
 
-	for voivodeship in voivodeships:
-		print("\n" + voivodeship.name + "\n")
-	
-		found_streets = streets.find_by_voivodeship_id(voivodeship.id)
-		for street in found_streets:
-			if street.voivodeship_id == voivodeship.id:
-				streetNames.append(street.get_full_name())
-	
-		print(Counter(streetNames).most_common(1))
-		streetNames.clear()
+        proper_name = street.proper_name
+        if proper_name not in street_arr[street.voivodeship_id].keys():
+            street_arr[street.voivodeship_id][proper_name] = 0
+        street_arr[street.voivodeship_id][proper_name] += 1
+    return street_arr
+
+
+def print_top_street_per_voivodeship(street_arr):
+    for arr_element in street_arr:
+        print("#---------------------#\n"
+              + "# "
+              + next(filter(lambda obj: obj.id == arr_element, voivodeships.all())).name
+              + "\n#---------------------#")
+        [
+            print(key, value)
+            for (key, value) in sorted(
+                street_arr[arr_element].items(),
+                key=lambda x: x[1],
+                reverse=True
+            )[:1]
+        ]
+        print()
