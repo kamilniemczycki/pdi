@@ -36,20 +36,27 @@ class Streets(object):
         self.file = file
         self.cities = cities
 
-    def find_by_street_name(self, street_name):
-        with open(self.file, encoding="utf-8") as fp:
-            lines = fp.readlines()
+    def file_lines(self):
+        with open(self.file, encoding="utf-8") as file:
+            lines = file.readlines()[1:]
             for line in lines:
-                if street_name.lower() in line.lower():
-                    street = Street(line)
-                    street.set_city(self.cities.find_by_id(street.city_id))
-                    yield street
+                if line not in "\n":
+                    yield line
+
+    def all(self):
+        for line in self.file_lines():
+            yield Street(line)
+
+    def find_by_street_name(self, street_name):
+        for line in self.file_lines():
+            if street_name.lower() in line.lower():
+                street = Street(line)
+                street.set_city(self.cities.find_by_id(street.city_id))
+                yield street
 
     def find_by_voivodeship_id(self, voivodeship_id):
-        with open(self.file, encoding="utf-8") as fp:
-            lines = fp.readlines()
-            for line in lines:
-                if voivodeship_id in line.lower():
-                    street = Street(line)
-                    street.set_city(self.cities.find_by_id(street.city_id))
-                    yield street
+        for line in self.file_lines():
+            if voivodeship_id in line.lower():
+                street = Street(line)
+                street.set_city(self.cities.find_by_id(street.city_id))
+                yield street
