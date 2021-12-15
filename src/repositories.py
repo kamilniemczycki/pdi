@@ -32,7 +32,7 @@ class Cities(object):
 
 
 class Streets(object):
-    def __init__(self, file, cities):
+    def __init__(self, file, cities=None):
         self.file = file
         self.cities = cities
 
@@ -51,7 +51,8 @@ class Streets(object):
         for line in self.file_lines():
             if street_name.lower() in line.lower():
                 street = Street(line)
-                street.set_city(self.cities.find_by_id(street.city_id))
+                if self.cities is not None:
+                    street.set_city(self.cities.find_by_id(street.city_id))
                 yield street
 
     def find_by_voivodeship_id(self, voivodeship_id):
