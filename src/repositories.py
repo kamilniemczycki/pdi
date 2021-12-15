@@ -4,31 +4,36 @@ from src.places import City, Street, Voivodeship
 class Cities(object):
     def __init__(self, file):
         self.file = file
+        self.lines = []
+        self.__load_lines()
 
     def find_by_id(self, city_id):
-        with open(self.file, encoding="utf-8") as fp:
-            lines = fp.readlines()
-            city = self.__find_exact_city(lines, city_id)
+        for line in self.lines:
+            city = self.__find_exact_city(line, city_id)
 
             if not city:
-                city = self.__find_fallback_city(lines, city_id)
+                city = self.__find_fallback_city(line, city_id)
 
             if city:
                 return city
 
         return City("? (" + city_id + ")")
 
-    @staticmethod
-    def __find_exact_city(lines, city_id):
-        for line in lines:
-            if city_id + ";" + city_id in line:
-                return City(line.split(";")[6])
+    def __load_lines(self):
+        with open(self.file, encoding="utf-8") as fp:
+            self.lines = list(
+                filter(lambda x: (x != "\n"), fp.readlines()[1:])
+            )
 
     @staticmethod
-    def __find_fallback_city(lines, city_id):
-        for line in lines:
-            if city_id in line:
-                return City(line.split(";")[6])
+    def __find_exact_city(line, city_id):
+        if city_id + ";" + city_id in line:
+            return City(line.split(";")[6])
+
+    @staticmethod
+    def __find_fallback_city(line, city_id):
+        if city_id in line:
+            return City(line.split(";")[6])
 
 
 class Streets(object):
@@ -36,19 +41,12 @@ class Streets(object):
         self.file = file
         self.cities = cities
 
-    def file_lines(self):
-        with open(self.file, encoding="utf-8") as file:
-            lines = file.readlines()[1:]
-            for line in lines:
-                if line not in "\n":
-                    yield line
-
     def all(self):
-        for line in self.file_lines():
+        for line in self.__load_lines():
             yield Street(line)
 
     def find_by_street_name(self, street_name):
-        for line in self.file_lines():
+        for line in self.__load_lines():
             if street_name.lower() in line.lower():
                 street = Street(line)
                 if self.cities is not None:
@@ -56,11 +54,18 @@ class Streets(object):
                 yield street
 
     def find_by_voivodeship_id(self, voivodeship_id):
-        for line in self.file_lines():
+        for line in self.__load_lines():
             if voivodeship_id in line.lower():
                 street = Street(line)
                 street.set_city(self.cities.find_by_id(street.city_id))
                 yield street
+
+    def __load_lines(self):
+        with open(self.file, encoding="utf-8") as file:
+            lines = file.readlines()[1:]
+            for line in lines:
+                if line not in "\n":
+                    yield line
 
 
 class Voivodeships:
