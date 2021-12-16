@@ -1,25 +1,12 @@
-from src.cli import get_searched_phrase, get_mapbox
-from src.repositories import Cities, Streets
+from src.cli import get_function, get_searched_phrase
+from src.search import search
+from src.topStreets import top_streets
 from sys import argv
 
-searched_street = get_searched_phrase(argv)
-mapbox = get_mapbox(argv)
+function = get_function(argv)
 
-cities = Cities("data/SIMC_Urzedowy_2021-10-09.csv")
-streets = Streets("data/ULIC_Adresowy_2021-10-09.csv", cities)
-
-counter = 0
-found_streets = streets.find_by_street_name(searched_street)
-
-for street in found_streets:
-    phrase = str(street.city) + ": " + street.get_full_name()
-    print(phrase)
-    counter = counter + 1
-
-    if mapbox:
-        coordinate = mapbox.add_coordinates_for_phrase(phrase)
-
-print(str(counter) + " streets were found.")
-
-if mapbox:
-    mapbox.prepare_map(searched_street)
+if function == "search":
+    searched_street = get_searched_phrase(argv)
+    search(searched_street)
+if function == "top":
+    top_streets()
