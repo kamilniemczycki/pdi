@@ -7,6 +7,10 @@ class Cities(object):
         self.lines = []
         self.__load_lines()
 
+    def all(self):
+        for line in self.lines:
+            yield City(line.split(";")[6])
+
     def find_by_id(self, city_id):
         for line in self.lines:
             city = self.__find_exact_city(line, city_id)
