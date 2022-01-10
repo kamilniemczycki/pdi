@@ -31,20 +31,3 @@ class DuplicatedStreet:
                             print("#################")
                             header = False
                         print(street.get_full_name())
-
-
-    @staticmethod
-    def __sort_of_popular(streets):
-        return sorted(
-            streets.items(),
-            key=lambda x: x[1],
-            reverse=True
-        )
-
-    @staticmethod
-    def __print(streets):
-        sort_of_popular = DuplicatedStreet.__sort_of_popular(streets)
-        [
-            print("%s: %4d" % (key, value))
-            for (key, value) in sort_of_popular[:100]
-        ]
