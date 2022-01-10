@@ -11,9 +11,9 @@ function = get_function(argv)
 if function == "search":
     searched_street = get_searched_phrase(argv)
     search(searched_street)
-if function == "top":
+if function == "top_street_per_voivodeship":
     TopStreetsPerVoivodeship().print()
-if function == "top_country":
+if function == "top_street_in_country":
     TopStreetsInCountry().print()
 if function == "popular_cities":
     PopularCities().print()
