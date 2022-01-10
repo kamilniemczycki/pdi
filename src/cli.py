@@ -8,7 +8,8 @@ def get_function(argv):
             "- py main.py search NAZWA_ULICY -- szukaj ulic wg. nazwy\n" +
             "- py main.py top -- wyświetl najpopularniejsze ulice w każdym województwie\n" +
             "- py main.py top_country -- wyświetl najpopularniejsze ulice w kraju\n" +
-            "- py main.py popular_cities -- wyświetl najpopularniejsze ulice w kraju")
+            "- py main.py popular_cities -- wyświetl najpopularniejsze ulice w kraju\n" +
+            "- py main.py duplicated_street -- wyświetl podobne ulice dla miast\n")
     return argv[1]
 
 
