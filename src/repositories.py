@@ -7,6 +7,10 @@ class Cities(object):
         self.lines = []
         self.__load_lines()
 
+    def all(self):
+        for line in self.lines:
+            yield City(line.split(";")[6], line.split(";")[0])
+
     def find_by_id(self, city_id):
         for line in self.lines:
             city = self.__find_exact_city(line, city_id)
@@ -74,11 +78,18 @@ class Voivodeships:
         self.voivodeships = []
 
     def all(self):
-        if not self.voivodeships:
-            self.load_with_file()
+        self.__load_to_array()
         return self.voivodeships
 
-    def load_with_file(self):
+    def find_by_id(self, voivodeship_id):
+        self.__load_to_array()
+        return next((voivodeship for voivodeship in self.voivodeships if voivodeship.id == voivodeship_id), None)
+
+    def __load_to_array(self):
+        if not self.voivodeships:
+            self.__load_with_file()
+
+    def __load_with_file(self):
         with open(self.file, encoding="utf-8") as fp:
             lines = fp.readlines()
             for line in lines:

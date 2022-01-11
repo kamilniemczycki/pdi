@@ -1,6 +1,7 @@
 class City(object):
-    def __init__(self, name):
+    def __init__(self, name, voivodeship_id=None):
         self.name = name
+        self.voivodeship_id = voivodeship_id
 
     def __str__(self):
         return self.name
