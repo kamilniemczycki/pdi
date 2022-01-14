@@ -1,5 +1,5 @@
-from src.top_streets.in_country import TopStreetsInCountry
-from src.repositories import Cities
+import collections
+from src.repositories import Cities, Streets
 
 
 class PopularCities:
@@ -7,7 +7,6 @@ class PopularCities:
     def __init__(self, cities=None):
         self.cities = cities or Cities("data/SIMC_Urzedowy_2021-10-09.csv")
         self.cities_list = []
-        self.top = TopStreetsInCountry()
 
     def check(self, street, city_name, arr):
         search = self.__clear_to_search(city_name)
@@ -23,13 +22,17 @@ class PopularCities:
 
     def print(self):
         cities = self.__names_of_cities()
-        top_streets = self.top.all()
+        top_streets = collections.Counter([
+            street.proper_name
+            for street in Streets("data/ULIC_Adresowy_2021-10-09.csv").all()
+            if len(street.proper_name.replace("-", " ", 2).split(" ")) < 3
+        ])
 
         print("All data has been loaded and the search is started")
 
         result = {}
         for city_name in cities:
-            streets = [street[0] for street in top_streets if self.check(street[0], city_name, cities)]
+            streets = [street for street in top_streets if self.check(street, city_name, cities)]
             if len(streets):
                 result[city_name] = len(streets)
 
@@ -50,25 +53,27 @@ class PopularCities:
         ]
 
     def __names_of_cities(self):
-        cities = self.cities_list
-        if len(cities) > 0:
-            return cities
-
-        for city in self.cities.all():
-            cities.append(city.name)
+        cities = list(
+            set(sorted([city.name for city in self.cities.all()]))
+        )
         return cities
 
     @staticmethod
-    def __clear_to_search(string):
-        string = string.replace("-", " ", 2)
+    def __clear_to_search(city_name):
+        to_remove = ["?w", "owa", "owo", "ice", "a"]
+        string = city_name.replace("-", " ", 2)
         string_split = string.split(" ")
 
-        for to_replace in ["ów", "owa", "owo", "ice", "a"]:
-            if len(string_split) == 1:
-                string_split = [string_split[0].removesuffix(to_replace)]
-            elif len(string_split) == 2:
-                string_split = [
-                    string_split[0].removesuffix(to_replace),
-                    string_split[1].removesuffix(to_replace)
-                ]
-        return string_split
+        modified_str = ""
+        for string in string_split:
+            suffix = [suff for suff in to_remove if string.endswith(suff)]
+            if len(suffix) > 0:
+                modified_str += string.removesuffix(suffix[0]) + " "
+            else:
+                modified_str += string + " "
+
+        if len(modified_str) > 0:
+            return modified_str.removesuffix(" ").split(" ")
+        elif len(modified_str) == 0 and isinstance(string_split, list):
+            return string_split
+        return []
